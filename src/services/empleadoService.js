@@ -5,6 +5,11 @@ export const getEmpleados = async (page = 1) => {
   return data
 }
 
+export const searchEmpleado = async (search, page = 1) => {
+  const { data } = await sutepaApi.get(`/empleados?search=${search}&page=${page}`)
+  return data
+}
+
 export const getEmpleadoById = async (id) => {
   const { data } = await sutepaApi.get(`/empleados/${id}`)
   return data

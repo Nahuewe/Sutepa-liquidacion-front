@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useSelector } from 'react-redux'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import Button from '@/components/ui/Button'
@@ -21,11 +20,8 @@ export const CreateLiquidacion = () => {
   const queryParams = new URLSearchParams(location.search)
   const initialPage = parseInt(queryParams.get('page')) || 1
   const [currentPage] = useState(initialPage)
-
   const { id } = useParams()
   const [isLoading, setIsLoading] = useState(false)
-
-  const { user } = useSelector((state) => state.auth)
   const navigate = useNavigate()
 
   const { data: empleados } = useQuery({
@@ -42,7 +38,7 @@ export const CreateLiquidacion = () => {
 
   const {
     register,
-    formState: { errors, isSubmitting },
+    formState: { isSubmitting },
     handleSubmit,
     setValue
   } = useForm()
@@ -85,7 +81,7 @@ export const CreateLiquidacion = () => {
     : (
       <>
         <Card>
-          <form onSubmit={handleSubmit(onSubmit)} className='space-y-6 dark:bg-black-500'>
+          <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
 
             <div>
               <label className='form-label block font-medium'>Empleado (*)</label>
@@ -109,7 +105,7 @@ export const CreateLiquidacion = () => {
                 className='w-full border rounded-lg p-2'
                 options={conceptos?.data ?? []}
                 onChange={(e) => {
-                  const concepto = conceptos?.data?.find(c => c.id == e.target.value)
+                  const concepto = conceptos?.data?.find(c => c.id === e.target.value)
                   if (concepto) {
                     setValue('concepto_id', concepto.id)
                     setValue('codigo', concepto.codigo)

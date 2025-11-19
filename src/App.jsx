@@ -1,6 +1,10 @@
 import React, { useEffect } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { Auditoria } from './pages/auth/Auditoria'
+import { Conceptos } from './pages/conceptos/Conceptos'
+import { CreateEditConceptos } from './pages/conceptos/CreateEditConceptos'
+import { CreateEditEmpleados } from './pages/empleados/CreateEditEmpleados'
+import { Empleados } from './pages/empleados/Empleados'
 import QRScanner from '@/components/QR/QRscanner'
 import Loading from '@/components/ui/Loading'
 import { useAuthStore } from '@/helpers/useAuthStore'
@@ -54,10 +58,21 @@ function App () {
                   {/* Auditoria */}
                   <Route path='auditoria' element={<Auditoria />} />
 
+                  {/* Liquidacion */}
                   <Route path='liquidaciones' element={<LiquidacionesList />} />
                   <Route path='liquidaciones/crear' element={<CreateEditLiquidacion />} />
                   <Route path='liquidaciones/editar/:id' element={<CreateEditLiquidacion />} />
                   <Route path='liquidaciones/:id' element={<LiquidacionView />} />
+
+                  {/* Conceptos */}
+                  <Route path='conceptos' element={<Conceptos />} />
+                  <Route path='conceptos/crear' element={<CreateEditConceptos />} />
+                  <Route path='conceptos/editar/:id' element={<CreateEditConceptos />} />
+
+                  {/* Empleados */}
+                  <Route path='empleados' element={<Empleados />} />
+                  <Route path='empleados/crear' element={<CreateEditEmpleados />} />
+                  <Route path='empleados/editar/:id' element={<CreateEditEmpleados />} />
 
                   {/* Votacion */}
                   <Route path='votaciones' element={<Votaciones />} />

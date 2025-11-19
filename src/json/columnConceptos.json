@@ -1,0 +1,18 @@
+[
+  {
+    "label": "Código",
+    "field": "codigo"
+  },
+  {
+    "label": "Descripción",
+    "field": "descripcion"
+  },
+  {
+    "label": "Tipo",
+    "field": "tipo"
+  },
+  {
+    "label": "Acciones",
+    "field": "acciones"
+  }
+]

@@ -18,56 +18,104 @@ export const LiquidacionView = () => {
 
   if (isLoading) return <Loading />
 
-  const l = data?.data
+  const l = data
 
-  if (!l) return <p className='text-center'>Liquidación no encontrada</p>
+  if (!l) return <p className='text-center text-lg mt-10'>Liquidación no encontrada</p>
 
   return (
     <>
-      <div className='flex items-center justify-between p-6 rounded-2xl bg-white shadow mb-4'>
+      {/* ENCABEZADO */}
+      <div className='flex items-center justify-between p-6 rounded-2xl bg-white dark:bg-slate-800 shadow mb-6'>
         <div>
-          <h1 className='text-2xl font-semibold'>Liquidación #{l.id}</h1>
-          <p className='text-gray-600'>{l.empleado.nombre} {l.empleado.apellido} — {l.periodo}</p>
+          <h1 className='text-3xl font-bold text-gray-800 dark:text-white'>
+            Liquidación #{l.id}
+          </h1>
+
+          <p className='text-gray-600 dark:text-gray-300 mt-1 text-lg'>
+            {l.empleado.nombre} {l.empleado.apellido} · {l.periodo}
+          </p>
         </div>
 
-        <div className='flex gap-2'>
-          <Button text='Volver' onClick={() => navigate('/liquidaciones')} className='btn-outline' />
-        </div>
+        <Button
+          text='Volver'
+          onClick={() => navigate('/liquidaciones')}
+          className='btn-outline'
+        />
       </div>
 
-      <Card>
-        <table className='w-full text-left'>
-          <thead>
-            <tr className='border-b'>
-              <th className='p-2'>Concepto</th>
-              <th className='p-2'>Tipo</th>
-              <th className='p-2'>Código</th>
-              <th className='p-2'>Descripción</th>
-              <th className='p-2'>Monto</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {l.items.map(it => (
-              <tr key={it.id} className='border-b'>
-                <td className='p-2'>{it.concepto?.descripcion ?? it.descripcion}</td>
-                <td className='p-2'>{it.tipo}</td>
-                <td className='p-2'>{it.codigo}</td>
-                <td className='p-2'>{it.descripcion}</td>
-                <td className='p-2'>${Number(it.monto).toFixed(2)}</td>
+      {/* TABLA */}
+      <Card className='p-0 overflow-hidden'>
+        <div className='overflow-x-auto'>
+          <table className='w-full text-left border-separate border-spacing-0'>
+            <thead className='bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-200'>
+              <tr>
+                <th className='p-3 font-semibold'>Concepto</th>
+                <th className='p-3 font-semibold'>Tipo</th>
+                <th className='p-3 font-semibold'>Código</th>
+                <th className='p-3 font-semibold'>Descripción</th>
+                <th className='p-3 font-semibold text-right'>Monto</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
 
-        <div className='mt-4 flex justify-end gap-6'>
-          <div className='text-right'>
-            <div>Total haberes: ${Number(l.total_haberes).toFixed(2)}</div>
-            <div>Total descuentos: ${Number(l.total_descuentos).toFixed(2)}</div>
-            <div className='font-semibold'>Neto: ${Number(l.neto).toFixed(2)}</div>
-          </div>
+            <tbody>
+              {l?.items?.length > 0
+                ? (
+                    l.items.map((it, index) => (
+                      <tr
+                        key={it.id}
+                        className={`${
+                      index % 2 === 0
+                        ? 'bg-white dark:bg-slate-800'
+                        : 'bg-gray-50 dark:bg-slate-700'
+                    } hover:bg-gray-100 dark:hover:bg-slate-600 transition`}
+                      >
+                        <td className='p-3'>{it.concepto?.descripcion ?? it.descripcion}</td>
+                        <td className='p-3'>{it.tipo}</td>
+                        <td className='p-3'>{it.codigo}</td>
+                        <td className='p-3'>{it.descripcion}</td>
+                        <td className='p-3 text-right font-medium'>
+                          ${Number(it.monto).toFixed(2)}
+                        </td>
+                      </tr>
+                    ))
+                  )
+                : (
+                  <tr>
+                    <td colSpan={5} className='p-6 text-center text-gray-500'>
+                      Sin ítems en esta liquidación
+                    </td>
+                  </tr>
+                  )}
+            </tbody>
+          </table>
         </div>
       </Card>
+
+      {/* TOTALES */}
+      <div className='mt-6'>
+        <Card className='p-6 md:w-1/3 ml-auto shadow-lg'>
+          <div className='space-y-2 text-gray-800 dark:text-gray-200 text-lg'>
+            <div className='flex justify-between'>
+              <span>Total haberes:</span>
+              <span className='font-medium'>
+                ${Number(l.total_haberes).toFixed(2)}
+              </span>
+            </div>
+
+            <div className='flex justify-between'>
+              <span>Total descuentos:</span>
+              <span className='font-medium'>
+                ${Number(l.total_descuentos).toFixed(2)}
+              </span>
+            </div>
+
+            <div className='flex justify-between pt-2 border-t text-xl font-bold'>
+              <span>Neto:</span>
+              <span>${Number(l.neto).toFixed(2)}</span>
+            </div>
+          </div>
+        </Card>
+      </div>
     </>
   )
 }

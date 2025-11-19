@@ -1,19 +1,16 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import ExportButton from '@/components/buttons/ExportButton'
 import Loading from '@/components/ui/Loading'
-
 import { exportarLiquidacionesExcel } from '@/export/exportarArchivos'
 import { getLiquidaciones, marcarPagada } from '@/services/liquidacionService'
 
 export const Liquidaciones = () => {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
-  const { user } = useSelector((state) => state.auth)
 
-  const { data: liquidaciones, isLoading, refetch } = useQuery({
+  const { data: liquidaciones, isLoading } = useQuery({
     queryKey: ['liquidaciones'],
     queryFn: getLiquidaciones,
     keepPreviousData: true

@@ -1,10 +1,9 @@
 // src/pages/liquidaciones/CreateEditLiquidacion.jsx
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useForm, useFieldArray } from 'react-hook-form'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
-
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import Loading from '@/components/ui/Loading'
@@ -15,9 +14,13 @@ import { getEmpleados } from '@/services/empleadoService'
 import { createLiquidacion, getLiquidacionById, updateLiquidacion } from '@/services/liquidacionService'
 
 export const CreateEditLiquidacion = () => {
-  const { id } = useParams() // id de liquidación si editás
+  const { id } = useParams()
   const navigate = useNavigate()
   const qc = useQueryClient()
+  const location = useLocation()
+  const queryParams = new URLSearchParams(location.search)
+  const initialPage = parseInt(queryParams.get('page')) || 1
+  const [currentPage] = useState(initialPage)
 
   const { data: empleadosData } = useQuery({ queryKey: ['empleados'], queryFn: () => getEmpleados(1) })
   const { data: conceptosData } = useQuery({ queryKey: ['conceptos'], queryFn: getConceptos })
@@ -135,7 +138,7 @@ export const CreateEditLiquidacion = () => {
               <label className='form-label block font-medium'>Empleado *</label>
               <SelectForm
                 name='empleado_id'
-                options={(empleadosData?.data?.data || []).map(e => ({ id: e.id, nombre: `${e.nombre} ${e.apellido}` }))}
+                options={(empleadosData || []).map(e => ({ id: e.id, nombre: `${e.nombre} ${e.apellido}` }))}
                 register={register('empleado_id')}
                 onChange={(e) => setValue('empleado_id', e.target.value)}
               />
@@ -183,9 +186,14 @@ export const CreateEditLiquidacion = () => {
                     <td className='p-2'>{idx + 1}</td>
 
                     <td className='p-2 w-56'>
-                      <select
-                        className='w-full p-2 border rounded'
-                        {...register(`items.${idx}.concepto_id`)}
+                      <SelectForm
+                        name={`items.${idx}.concepto_id`}
+                        register={register(`items.${idx}.concepto_id`)}
+                        value={watch(`items.${idx}.concepto_id`) ?? ''}
+                        options={(conceptosData || []).map(c => ({
+                          id: c.id,
+                          nombre: `${c.codigo} - ${c.descripcion} (${c.tipo})`
+                        }))}
                         onChange={(e) => {
                           const selected = (conceptosData?.data || []).find(c => String(c.id) === e.target.value)
                           if (selected) {
@@ -197,47 +205,56 @@ export const CreateEditLiquidacion = () => {
                             setValue(`items.${idx}.concepto_id`, '')
                           }
                         }}
-                        value={watch(`items.${idx}.concepto_id`) ?? ''}
-                      >
-                        <option value=''>-- Seleccione --</option>
-                        {(conceptosData?.data || []).map(c => (
-                          <option key={c.id} value={c.id}>
-                            {c.codigo} - {c.descripcion} ({c.tipo})
-                          </option>
-                        ))}
-                      </select>
+                      />
                     </td>
 
                     <td className='p-2 w-32'>
-                      <select
-                        className='w-full p-2 border rounded'
-                        {...register(`items.${idx}.tipo`)}
+                      <SelectForm
+                        name={`items.${idx}.tipo`}
+                        register={register(`items.${idx}.tipo`)}
                         value={watch(`items.${idx}.tipo`) ?? 'HABER'}
-                      >
-                        <option value='HABER'>HABER</option>
-                        <option value='DESCUENTO'>DESCUENTO</option>
-                      </select>
+                        options={[
+                          { id: 'HABER', nombre: 'HABER' },
+                          { id: 'DESCUENTO', nombre: 'DESCUENTO' }
+                        ]}
+                        onChange={(e) => setValue(`items.${idx}.tipo`, e.target.value)}
+                      />
                     </td>
 
-                    <td className='p-2 w-28'>
-                      <input className='w-full p-2 border rounded' {...register(`items.${idx}.codigo`)} />
+                    <td className='w-28 p-1'>
+                      <Textinput
+                        name={`items.${idx}.codigo`}
+                        type='text'
+                        register={register}
+                      />
                     </td>
 
-                    <td className='p-2'>
-                      <input className='w-full p-2 border rounded' {...register(`items.${idx}.descripcion`)} />
+                    <td className='p-1'>
+                      <Textinput
+                        name={`items.${idx}.descripcion`}
+                        type='text'
+                        placeholder='Ingrese una descripción...'
+                        register={register}
+                      />
                     </td>
 
-                    <td className='p-2 w-32'>
-                      <input
+                    <td className='p-1 w-32'>
+                      <Textinput
+                        name={`items.${idx}.monto`}
                         type='number'
-                        step='0.01'
-                        className='w-full p-2 border rounded'
-                        {...register(`items.${idx}.monto`, { valueAsNumber: true })}
+                        register={register}
+                        placeholder='0.00'
                       />
                     </td>
 
                     <td className='p-2'>
-                      <button type='button' className='text-red-600' onClick={() => remove(idx)}>Eliminar</button>
+                      <button
+                        type='button'
+                        className='text-red-600'
+                        onClick={() => remove(idx)}
+                      >
+                        Eliminar
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -257,13 +274,19 @@ export const CreateEditLiquidacion = () => {
         </form>
       </Card>
 
-      <div className='flex justify-end gap-4 mt-6'>
-        <Button text='Volver' className='btn-danger' onClick={() => navigate('/liquidaciones')} />
+      <div className='flex justify-end gap-4 mt-8'>
+        <button
+          className='btn-danger py-2 px-6 rounded-lg'
+          onClick={() => navigate(`/liquidaciones?page=${currentPage}`)}
+        >
+          Volver
+        </button>
         <Button
+          type='submit'
           text={isSubmitting ? 'Guardando...' : (id ? 'Actualizar' : 'Crear')}
-          className='bg-green-600 text-white'
-          onClick={handleSubmit(onSubmit)}
+          className={`bg-green-500 ${isSubmitting ? 'cursor-not-allowed opacity-50' : 'hover:bg-green-700'} text-white py-2 px-6 rounded-lg`}
           disabled={isSubmitting}
+          onClick={handleSubmit(onSubmit)}
         />
       </div>
     </>
