@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -18,14 +18,14 @@ export const CreateEditConceptos = () => {
 
   const isEdit = Boolean(id)
 
-  const [form, setForm] = useState({
-    codigo: '',
-    descripcion: '',
-    tipo: '',
-    monto: ''
+  const { register, handleSubmit, setValue } = useForm({
+    defaultValues: {
+      codigo: '',
+      descripcion: '',
+      tipo: 'HABER',
+      monto: ''
+    }
   })
-
-  const { register } = useForm()
 
   const { data: concepto, isLoading } = useQuery({
     queryKey: ['concepto', id],
@@ -33,31 +33,22 @@ export const CreateEditConceptos = () => {
     enabled: isEdit
   })
 
-  // ➜ Cargar datos del backend cuando se edita
   useEffect(() => {
-    if (isEdit && concepto?.data) {
-      setForm({
-        codigo: concepto.data.codigo,
-        descripcion: concepto.data.descripcion,
-        tipo: concepto.data.tipo,
-        monto: concepto.data.monto_default ?? ''
-      })
+    if (isEdit && concepto) {
+      setValue('codigo', concepto.codigo)
+      setValue('descripcion', concepto.descripcion)
+      setValue('tipo', concepto.tipo)
+      setValue('monto', concepto.monto_default ?? '')
     }
-  }, [concepto, isEdit])
+  }, [concepto, isEdit, setValue])
 
-  const onChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
-  }
-
-  const onSubmit = async (e) => {
-    e.preventDefault()
-
+  const onSubmit = handleSubmit(async (data) => {
     try {
       if (isEdit) {
-        await updateConcepto(id, form)
+        await updateConcepto(id, data)
         toast.success('Concepto actualizado correctamente')
       } else {
-        await createConcepto(form)
+        await createConcepto(data)
         toast.success('Concepto creado correctamente')
       }
 
@@ -69,7 +60,7 @@ export const CreateEditConceptos = () => {
         toast.error('Error al guardar el concepto')
       }
     }
-  }
+  })
 
   if (isEdit && isLoading) {
     return <Loading className='mt-24' />
@@ -88,23 +79,19 @@ export const CreateEditConceptos = () => {
         <Textinput
           label='Código'
           name='codigo'
-          value={form.codigo}
-          onChange={onChange}
           register={register}
           required
           className='rounded-lg !py-3'
-          placeholder='Ej: AGU'
+          placeholder='Código del Concepto...'
         />
 
         <Textinput
           label='Descripción'
           name='descripcion'
-          value={form.descripcion}
-          onChange={onChange}
           register={register}
           required
           className='rounded-lg !py-3'
-          placeholder='Ej: Aguinaldo'
+          placeholder='Descripción del Concepto...'
         />
 
         <div className='flex flex-col gap-2'>
@@ -113,9 +100,7 @@ export const CreateEditConceptos = () => {
           </label>
 
           <select
-            name='tipo'
-            value={form.tipo}
-            onChange={onChange}
+            {...register('tipo')}
             className='border rounded-lg px-4 py-3 bg-white dark:bg-slate-800 dark:border-slate-700 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition'
             required
           >
@@ -129,11 +114,9 @@ export const CreateEditConceptos = () => {
           name='monto'
           type='number'
           step='0.01'
-          value={form.monto}
           register={register}
-          onChange={onChange}
           className='rounded-lg !py-3'
-          placeholder='0.00'
+          placeholder='Monto Basico del Concepto...'
         />
 
         <div className='md:col-span-2 flex justify-end mt-6'>

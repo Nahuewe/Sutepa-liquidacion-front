@@ -1,4 +1,3 @@
-import React from 'react'
 import Logo from './Tools/Logo'
 import Profile from './Tools/Profile'
 import SwitchDark from './Tools/SwitchDark'
@@ -6,13 +5,13 @@ import Icon from '@/components/ui/Icon'
 import useMenulayout from '@/hooks/useMenulayout'
 import useMobileMenu from '@/hooks/useMobileMenu'
 import useNavbarType from '@/hooks/useNavbarType'
-// import useRtl from '@/hooks/useRtl'
-// import useSidebar from '@/hooks/useSidebar'
+import useRtl from '@/hooks/useRtl'
+import useSidebar from '@/hooks/useSidebar'
 import useSkin from '@/hooks/useSkin'
 import useWidth from '@/hooks/useWidth'
 
 const Header = ({ className = 'custom-class' }) => {
-  // const [collapsed, setMenuCollapsed] = useSidebar()
+  const [collapsed, setMenuCollapsed] = useSidebar()
   const { width, breakpoints } = useWidth()
   const [navbarType] = useNavbarType()
   const navbarTypeClass = () => {
@@ -31,7 +30,7 @@ const Header = ({ className = 'custom-class' }) => {
   }
   const [menuType] = useMenulayout()
   const [skin] = useSkin()
-  // const [isRtl] = useRtl()
+  const [isRtl] = useRtl()
 
   const [mobileMenu, setMobileMenu] = useMobileMenu()
 
@@ -61,10 +60,9 @@ const Header = ({ className = 'custom-class' }) => {
         `}
       >
         <div className='flex justify-between items-center h-full'>
-
           {menuType === 'vertical' && (
             <div className='flex items-center md:space-x-4 space-x-2 rtl:space-x-reverse'>
-              {/* {collapsed && width >= breakpoints.xl && (
+              {collapsed && width >= breakpoints.xl && (
                 <button
                   className='text-xl text-slate-900 dark:text-white'
                   onClick={() => setMenuCollapsed(!collapsed)}
@@ -77,9 +75,8 @@ const Header = ({ className = 'custom-class' }) => {
                       <Icon icon='akar-icons:arrow-right' />
                       )}
                 </button>
-              )} */}
+              )}
               {width < breakpoints.xl && <Logo />}
-
               {width < breakpoints.xl && width >= breakpoints.md && (
                 <div
                   className='cursor-pointer text-slate-900 dark:text-white text-2xl'
@@ -88,15 +85,11 @@ const Header = ({ className = 'custom-class' }) => {
                   <Icon icon='heroicons-outline:menu-alt-3' />
                 </div>
               )}
-
             </div>
           )}
-          <span className='text-red-600 dark:text-red-400 hidden md:block font-extrabold'>Sindicato Unido de Trabajadores y Empleados de PAMI</span>
-
           {menuType === 'horizontal' && (
             <div className='flex items-center space-x-4 rtl:space-x-reverse'>
               <Logo />
-
               {width <= breakpoints.xl && (
                 <div
                   className='cursor-pointer text-slate-900 dark:text-white text-2xl'
@@ -108,9 +101,7 @@ const Header = ({ className = 'custom-class' }) => {
             </div>
           )}
           <div className='nav-tools flex items-center space-x-3 rtl:space-x-reverse'>
-
             <SwitchDark />
-
             <Profile />
             {width <= breakpoints.md && (
               <div

@@ -50,7 +50,7 @@ function App () {
               )
             : (
               <>
-                <Route path='/' element={<Navigate to='/votaciones' />} />
+                <Route path='/' element={<Navigate to='/liquidaciones' />} />
 
                 <Route path='/*' element={<Layout />}>
                   <Route path='*' element={<Navigate to='/404' />} />

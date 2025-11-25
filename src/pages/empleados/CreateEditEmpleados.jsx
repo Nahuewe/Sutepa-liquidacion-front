@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -16,15 +16,16 @@ export const CreateEditEmpleados = () => {
   const page = parseInt(queryParams.get('page')) || 1
 
   const isEdit = Boolean(id)
-  const { register } = useForm()
 
-  const [form, setForm] = useState({
-    nombre: '',
-    apellido: '',
-    cuil: '',
-    legajo: '',
-    sueldo_basico: '',
-    puesto: ''
+  const { register, handleSubmit, setValue } = useForm({
+    defaultValues: {
+      nombre: '',
+      apellido: '',
+      cuil: '',
+      legajo: '',
+      sueldo_basico: '',
+      puesto: ''
+    }
   })
 
   const { data: empleado, isLoading } = useQuery({
@@ -34,31 +35,23 @@ export const CreateEditEmpleados = () => {
   })
 
   useEffect(() => {
-    if (empleado?.data && isEdit) {
-      setForm({
-        nombre: empleado.data.nombre ?? '',
-        apellido: empleado.data.apellido ?? '',
-        cuil: empleado.data.cuil ?? '',
-        legajo: empleado.data.legajo ?? '',
-        sueldo_basico: empleado.data.sueldo_basico ?? '',
-        puesto: empleado.data.puesto ?? ''
-      })
+    if (empleado && isEdit) {
+      setValue('nombre', empleado.nombre ?? '')
+      setValue('apellido', empleado.apellido ?? '')
+      setValue('cuil', empleado.cuil ?? '')
+      setValue('legajo', empleado.legajo ?? '')
+      setValue('sueldo_basico', empleado.sueldo_basico ?? '')
+      setValue('puesto', empleado.puesto ?? '')
     }
-  }, [empleado, isEdit])
+  }, [empleado, isEdit, setValue])
 
-  const onChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
-  }
-
-  const onSubmit = async (e) => {
-    e.preventDefault()
-
+  const onSubmit = handleSubmit(async (data) => {
     try {
       if (isEdit) {
-        await updateEmpleado(id, form)
+        await updateEmpleado(id, data)
         toast.success('Empleado actualizado correctamente')
       } else {
-        await createEmpleado(form)
+        await createEmpleado(data)
         toast.success('Empleado creado correctamente')
       }
 
@@ -67,7 +60,7 @@ export const CreateEditEmpleados = () => {
       console.error(err)
       toast.error('Error al guardar el empleado')
     }
-  }
+  })
 
   if (isEdit && isLoading) {
     return <Loading className='mt-24' />
@@ -86,43 +79,35 @@ export const CreateEditEmpleados = () => {
         <Textinput
           label='Nombre'
           name='nombre'
-          value={form.nombre}
-          onChange={onChange}
           register={register}
           required
           className='rounded-lg !py-3'
-          placeholder='Ej: Juan'
+          placeholder='Nombre del Empleado...'
         />
 
         <Textinput
           label='Apellido'
           name='apellido'
-          value={form.apellido}
-          onChange={onChange}
           register={register}
           required
           className='rounded-lg !py-3'
-          placeholder='Ej: Pérez'
+          placeholder='Apellido del Empleado...'
         />
 
         <Textinput
           label='CUIL'
           name='cuil'
-          value={form.cuil}
-          onChange={onChange}
           register={register}
           className='rounded-lg !py-3'
-          placeholder='20-12345678-9'
+          placeholder='CUIL del Empleado...'
         />
 
         <Textinput
           label='Legajo'
           name='legajo'
-          value={form.legajo}
-          onChange={onChange}
           register={register}
           className='rounded-lg !py-3'
-          placeholder='Ej: 4421'
+          placeholder='Legajo del Empleado...'
         />
 
         <Textinput
@@ -130,12 +115,10 @@ export const CreateEditEmpleados = () => {
           name='sueldo_basico'
           type='number'
           step='0.01'
-          value={form.sueldo_basico}
-          onChange={onChange}
           register={register}
           required
           className='rounded-lg !py-3'
-          placeholder='0.00'
+          placeholder='Sueldo Basico del Empleado...'
         />
 
         <div className='flex flex-col gap-2'>
@@ -144,9 +127,7 @@ export const CreateEditEmpleados = () => {
           </label>
 
           <select
-            name='puesto'
-            value={form.puesto}
-            onChange={onChange}
+            {...register('puesto')}
             className='border rounded-lg px-4 py-3 bg-white dark:bg-slate-800 dark:border-slate-700 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition'
           >
             <option value=''>Seleccionar...</option>

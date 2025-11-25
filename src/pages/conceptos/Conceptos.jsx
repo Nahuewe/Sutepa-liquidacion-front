@@ -90,7 +90,7 @@ export const Conceptos = () => {
                   <button
                     type='button'
                     onClick={addConcepto}
-                    className='bg-indigo-600 hover:bg-blue-800 text-white py-2 px-6 rounded-lg'
+                    className='bg-red-600 hover:bg-red-800 text-white py-2 px-6 rounded-lg'
                   >
                     Agregar
                   </button>
@@ -110,13 +110,13 @@ export const Conceptos = () => {
                   </thead>
 
                   <tbody className='bg-white divide-y divide-slate-200 dark:bg-slate-800 dark:divide-slate-700'>
-                    {conceptos?.length > 0
-                      ? conceptos?.map((item) => (
+                    {conceptos?.data?.length > 0
+                      ? conceptos?.data?.map((item) => (
                         <tr key={item.id}>
                           <td className='table-td'>{item.codigo}</td>
                           <td className='table-td'>{item.descripcion}</td>
                           <td className='table-td'>{item.tipo}</td>
-
+                          <td className='table-td'>{item.monto_default}</td>
                           <td className='table-td flex gap-2'>
                             <EditButton evento={item} onEdit={onEdit} />
                             <DeleteButton evento={item} onDelete={onDelete} refetch={refetch} />

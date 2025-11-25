@@ -5,6 +5,11 @@ export const getLiquidaciones = async (page = 1) => {
   return data
 }
 
+export const searchLiquidaciones = async (search, page) => {
+  const { data } = await sutepaApi.get(`/liquidaciones?search=${search}&page=${page}`)
+  return data
+}
+
 export const getLiquidacionById = async (id) => {
   const { data } = await sutepaApi.get(`/liquidaciones/${id}`)
   return data
@@ -25,17 +30,15 @@ export const deleteLiquidacion = async (id) => {
   return data
 }
 
-// Cambiar estado → pagada
 export const marcarPagada = async (id) => {
   const { data } = await sutepaApi.post(`/liquidaciones/${id}/pagar`)
   return data
 }
 
-// Exportar a Excel (opcional si ya lo tenías)
 export const exportarLiquidaciones = async () => {
   const response = await sutepaApi.get('/liquidaciones/export', {
     responseType: 'blob'
   })
 
-  return response
+  return response.data
 }

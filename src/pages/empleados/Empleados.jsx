@@ -77,7 +77,7 @@ export const Empleados = () => {
               <div className='flex gap-4 items-center'>
                 <SearchInput
                   name='search'
-                  placeholder='Buscar empleado'
+                  placeholder='Buscar'
                   onChange={onSearch}
                   value={search}
                 />
@@ -85,7 +85,7 @@ export const Empleados = () => {
                 <button
                   type='button'
                   onClick={addEmpleado}
-                  className='bg-indigo-600 hover:bg-blue-800 text-white py-2 px-6 rounded-lg'
+                  className='bg-red-600 hover:bg-red-800 text-white py-2 px-6 rounded-lg'
                 >
                   Agregar
                 </button>
@@ -103,20 +103,22 @@ export const Empleados = () => {
                     <th className='table-th'>CUIL</th>
                     <th className='table-th'>Legajo</th>
                     <th className='table-th'>Puesto</th>
+                    <th className='table-th'>Sueldo Basico</th>
                     <th className='table-th'>Acciones</th>
                   </tr>
                 </thead>
 
                 <tbody className='divide-y divide-slate-100 dark:divide-slate-700'>
                   {
-                    empleados?.length
-                      ? empleados.map((e) => (
+                    empleados?.data?.length
+                      ? empleados?.data?.map((e) => (
                         <tr key={e.id}>
                           <td className='table-td'>{e.apellido}</td>
                           <td className='table-td'>{e.nombre}</td>
                           <td className='table-td'>{e.cuil || '-'}</td>
                           <td className='table-td'>{e.legajo || '-'}</td>
                           <td className='table-td'>{e.puesto || '-'}</td>
+                          <td className='table-td'>{e.sueldo_basico || '-'}</td>
                           <td className='table-td flex gap-2'>
                             <EditButton evento={e} onEdit={onEdit} />
                             <DeleteButton evento={e} onDelete={onDelete} />

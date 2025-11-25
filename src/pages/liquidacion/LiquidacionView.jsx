@@ -69,10 +69,10 @@ export const LiquidacionView = () => {
                         : 'bg-gray-50 dark:bg-slate-700'
                     } hover:bg-gray-100 dark:hover:bg-slate-600 transition`}
                       >
-                        <td className='p-3'>{it.concepto?.descripcion ?? it.descripcion}</td>
-                        <td className='p-3'>{it.tipo}</td>
-                        <td className='p-3'>{it.codigo}</td>
-                        <td className='p-3'>{it.descripcion}</td>
+                        <td className='p-3'>{it?.concepto?.descripcion ?? it?.descripcion}</td>
+                        <td className='p-3'>{it?.tipo}</td>
+                        <td className='p-3'>{it?.concepto?.codigo}</td>
+                        <td className='p-3'>{it?.concepto?.descripcion}</td>
                         <td className='p-3 text-right font-medium'>
                           ${Number(it.monto).toFixed(2)}
                         </td>

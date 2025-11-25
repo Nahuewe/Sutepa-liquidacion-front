@@ -1,4 +1,3 @@
-// src/pages/liquidaciones/CreateEditLiquidacion.jsx
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react'
 import { useForm, useFieldArray } from 'react-hook-form'
@@ -51,12 +50,13 @@ export const CreateEditLiquidacion = () => {
     name: 'items'
   })
 
-  // cargar para editar
   useEffect(() => {
-    if (liquidacionData?.data) {
-      const l = liquidacionData.data
+    if (liquidacionData) {
+      const l = liquidacionData
+
       setValue('empleado_id', l.empleado_id)
       setValue('periodo', l.periodo)
+
       const items = l.items.map(it => ({
         concepto_id: it.concepto_id ?? '',
         tipo: it.tipo,
@@ -64,26 +64,32 @@ export const CreateEditLiquidacion = () => {
         descripcion: it.descripcion ?? it.concepto?.descripcion ?? '',
         monto: Number(it.monto)
       }))
+
       replace(items.length ? items : [])
     }
-  }, [liquidacionData, replace, setValue])
+  }, [liquidacionData])
 
-  // totales en tiempo real
   const itemsWatch = watch('items')
+
   const totals = useMemo(() => {
     let hab = 0
     let desc = 0
+
     for (let i = 0; i < (itemsWatch?.length || 0); i++) {
-      const it = itemsWatch[i] || {}
-      const m = Number(it.monto || 0)
-      if (it.tipo === 'HABER') hab += m
-      else desc += m
+      const it = itemsWatch[i]
+      const monto = Number(it?.monto || 0)
+
+      if (it?.tipo === 'HABER') hab += monto
+      else desc += monto
     }
-    const neto = hab - desc
-    return { hab, desc, neto }
+
+    return {
+      hab,
+      desc,
+      neto: hab - desc
+    }
   }, [itemsWatch])
 
-  // --- REACT QUERY v5 ---
   const createMut = useMutation({
     mutationFn: (payload) => createLiquidacion(payload),
     onSuccess: () => {
@@ -98,14 +104,13 @@ export const CreateEditLiquidacion = () => {
     mutationFn: ({ id, payload }) => updateLiquidacion(id, payload),
     onSuccess: () => {
       toast.success('Liquidación actualizada')
-      qc.invalidateQueries({ queryKey: ['liquidaciones'] })
+      qc.invalidateQueries({ queryKey: ['liquidaciones'], exact: false })
       navigate('/liquidaciones')
     },
     onError: () => toast.error('Error al actualizar')
   })
 
   const onSubmit = (data) => {
-    // validar que haya al menos 1 item con monto > 0
     const validItems = (data.items || []).filter(i => Number(i.monto) !== 0)
     if (!validItems.length) {
       return toast.error('La liquidación debe tener al menos un concepto con monto distinto de 0.')
@@ -134,11 +139,15 @@ export const CreateEditLiquidacion = () => {
       <Card>
         <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
           <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+
             <div>
               <label className='form-label block font-medium'>Empleado *</label>
               <SelectForm
                 name='empleado_id'
-                options={(empleadosData || []).map(e => ({ id: e.id, nombre: `${e.nombre} ${e.apellido}` }))}
+                options={(empleadosData?.data ?? []).map(e => ({
+                  id: e.id,
+                  nombre: `${e.nombre} ${e.apellido}`
+                }))}
                 register={register('empleado_id')}
                 onChange={(e) => setValue('empleado_id', e.target.value)}
               />
@@ -148,24 +157,29 @@ export const CreateEditLiquidacion = () => {
               <label className='form-label block font-medium'>Periodo (YYYY-MM) *</label>
               <Textinput
                 name='periodo'
-                placeholder='2025-11'
+                placeholder='YYYY-MM'
                 register={register}
                 error={errors.periodo}
+                onChange={(e) => {
+                  let value = e.target.value.replace(/\D/g, '')
+                  if (value.length > 4) {
+                    value = value.slice(0, 4) + '-' + value.slice(4, 6)
+                  }
+                  if (value.length > 7) value = value.slice(0, 7)
+                  setValue('periodo', value, { shouldValidate: true })
+                }}
               />
             </div>
 
             <div className='flex items-end'>
-              <div>
-                <Button
-                  text='Agregar concepto'
-                  onClick={() => append({ concepto_id: '', tipo: 'HABER', codigo: '', descripcion: '', monto: 0 })}
-                  className='bg-green-600 text-white'
-                />
-              </div>
+              <Button
+                text='Agregar concepto'
+                onClick={() => append({ concepto_id: '', tipo: 'HABER', codigo: '', descripcion: '', monto: 0 })}
+                className='bg-blue-600 text-white'
+              />
             </div>
           </div>
 
-          {/* Items */}
           <div className='overflow-x-auto'>
             <table className='w-full text-left'>
               <thead>
@@ -190,17 +204,21 @@ export const CreateEditLiquidacion = () => {
                         name={`items.${idx}.concepto_id`}
                         register={register(`items.${idx}.concepto_id`)}
                         value={watch(`items.${idx}.concepto_id`) ?? ''}
-                        options={(conceptosData || []).map(c => ({
+                        options={(conceptosData?.data || []).map(c => ({
                           id: c.id,
                           nombre: `${c.codigo} - ${c.descripcion} (${c.tipo})`
                         }))}
                         onChange={(e) => {
-                          const selected = (conceptosData?.data || []).find(c => String(c.id) === e.target.value)
+                          const selected = (conceptosData?.data || []).find(
+                            c => String(c.id) === e.target.value
+                          )
+
                           if (selected) {
                             setValue(`items.${idx}.concepto_id`, selected.id)
                             setValue(`items.${idx}.codigo`, selected.codigo)
                             setValue(`items.${idx}.descripcion`, selected.descripcion)
                             setValue(`items.${idx}.tipo`, selected.tipo)
+                            setValue(`items.${idx}.monto`, Number(selected.monto_default || 0))
                           } else {
                             setValue(`items.${idx}.concepto_id`, '')
                           }
@@ -225,6 +243,7 @@ export const CreateEditLiquidacion = () => {
                       <Textinput
                         name={`items.${idx}.codigo`}
                         type='text'
+                        placeholder=''
                         register={register}
                       />
                     </td>
@@ -243,10 +262,16 @@ export const CreateEditLiquidacion = () => {
                         name={`items.${idx}.monto`}
                         type='number'
                         register={register}
+                        value={watch(`items.${idx}.monto`) ?? 0}
+                        onChange={(e) => {
+                          const value = Number(e.target.value)
+                          setValue(`items.${idx}.monto`, value, { shouldValidate: true })
+                        }}
                         placeholder='0.00'
                       />
                     </td>
 
+                    {/* ELIMINAR */}
                     <td className='p-2'>
                       <button
                         type='button'
@@ -262,7 +287,6 @@ export const CreateEditLiquidacion = () => {
             </table>
           </div>
 
-          {/* Totales */}
           <div className='flex justify-end gap-6 mt-4'>
             <div className='text-right'>
               <div>Haberes: ${totals.hab.toFixed(2)}</div>
@@ -281,6 +305,7 @@ export const CreateEditLiquidacion = () => {
         >
           Volver
         </button>
+
         <Button
           type='submit'
           text={isSubmitting ? 'Guardando...' : (id ? 'Actualizar' : 'Crear')}

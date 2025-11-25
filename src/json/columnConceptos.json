@@ -12,6 +12,10 @@
     "field": "tipo"
   },
   {
+    "label": "Monto",
+    "field": "monto"
+  },
+  {
     "label": "Acciones",
     "field": "acciones"
   }
