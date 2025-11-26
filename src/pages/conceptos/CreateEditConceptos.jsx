@@ -6,7 +6,7 @@ import { toast } from 'react-toastify'
 import Card from '@/components/ui/Card'
 import Loading from '@/components/ui/Loading'
 import Textinput from '@/components/ui/Textinput'
-import { createConcepto, getConceptoById, updateConcepto } from '@/services/conceptosService'
+import { createConcepto, getConceptoById, updateConcepto } from '@/services/conceptoService'
 
 export const CreateEditConceptos = () => {
   const { id } = useParams()
@@ -18,14 +18,26 @@ export const CreateEditConceptos = () => {
 
   const isEdit = Boolean(id)
 
-  const { register, handleSubmit, setValue } = useForm({
+  const { register, handleSubmit, setValue, watch } = useForm({
     defaultValues: {
       codigo: '',
       descripcion: '',
       tipo: 'HABER',
-      monto: ''
+      monto: '',
+      modo_calculo: 'FIJO',
+      valor_calculo: ''
     }
   })
+
+  const modoCalculo = watch('modo_calculo')
+
+  useEffect(() => {
+    if (modoCalculo === 'FIJO') {
+      setValue('valor_calculo', 0)
+    } else {
+      setValue('monto', 0)
+    }
+  }, [modoCalculo, setValue])
 
   const { data: concepto, isLoading } = useQuery({
     queryKey: ['concepto', id],
@@ -39,6 +51,8 @@ export const CreateEditConceptos = () => {
       setValue('descripcion', concepto.descripcion)
       setValue('tipo', concepto.tipo)
       setValue('monto', concepto.monto_default ?? '')
+      setValue('modo_calculo', concepto.modo_calculo ?? 'FIJO')
+      setValue('valor_calculo', concepto.valor_calculo ?? '')
     }
   }, [concepto, isEdit, setValue])
 
@@ -109,15 +123,45 @@ export const CreateEditConceptos = () => {
           </select>
         </div>
 
-        <Textinput
-          label='Monto por defecto'
-          name='monto'
-          type='number'
-          step='0.01'
-          register={register}
-          className='rounded-lg !py-3'
-          placeholder='Monto Basico del Concepto...'
-        />
+        <div className='flex flex-col gap-2'>
+          <label className='font-medium text-slate-700 dark:text-slate-200'>
+            Modo de Cálculo
+          </label>
+
+          <select
+            {...register('modo_calculo')}
+            className='border rounded-lg px-4 py-3 bg-white dark:bg-slate-800 dark:border-slate-700 shadow-sm'
+            required
+          >
+            <option value='FIJO'>Monto fijo</option>
+            <option value='PORCENTAJE'>Porcentaje del sueldo</option>
+          </select>
+        </div>
+
+        {modoCalculo === 'FIJO' && (
+          <Textinput
+            label='Monto por defecto'
+            name='monto'
+            type='number'
+            rules={{ valueAsNumber: true }}
+            step='0.01'
+            register={register}
+            className='rounded-lg !py-3'
+            placeholder='Monto Básico del Concepto...'
+          />
+        )}
+
+        {modoCalculo !== 'FIJO' && (
+          <Textinput
+            label='Valor de cálculo'
+            name='valor_calculo'
+            type='number'
+            step='0.01'
+            register={register}
+            className='rounded-lg !py-3'
+            placeholder='Ej: 10 para 10%'
+          />
+        )}
 
         <div className='md:col-span-2 flex justify-end mt-6'>
           <button

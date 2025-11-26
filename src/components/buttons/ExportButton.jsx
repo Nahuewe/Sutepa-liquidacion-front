@@ -7,7 +7,7 @@ const ExportButton = ({
   textoExportando,
   colors = {
     normal: 'bg-green-600 hover:bg-green-800',
-    exporting: 'bg-red-500 hover:bg-red-600'
+    exporting: 'bg-green-500 hover:bg-green-600'
   }
 }) => {
   const [exportando, setExportando] = useState(false)

@@ -25,6 +25,41 @@ export const renderizarJson = (jsonString) => {
       return value
     }
 
+    const renderizarValor = (value) => {
+      if (Array.isArray(value)) {
+        return (
+          <ul className='list-disc list-inside ml-4'>
+            {value.map((item, idx) => (
+              <li key={idx}>
+                {typeof item === 'object' && item !== null
+                  ? renderizarObjeto(item)
+                  : String(item)}
+              </li>
+            ))}
+          </ul>
+        )
+      }
+
+      if (typeof value === 'object' && value !== null) {
+        return renderizarObjeto(value)
+      }
+
+      return String(value)
+    }
+
+    const renderizarObjeto = (obj) => {
+      const objetoFiltrado = filtrarClaves(obj)
+      return (
+        <div className='ml-4 border-l-2 border-gray-300 pl-2'>
+          {Object.entries(objetoFiltrado).map(([key, value]) => (
+            <div key={key} className='mb-1'>
+              <strong>{key}:</strong> {renderizarValor(formatearValor(key, value))}
+            </div>
+          ))}
+        </div>
+      )
+    }
+
     if (Array.isArray(parsed)) {
       return parsed.length
         ? (
@@ -35,7 +70,7 @@ export const renderizarJson = (jsonString) => {
                 <li key={idx}>
                   {Object.entries(itemFiltrado).map(([key, value]) => (
                     <div key={key}>
-                      <strong>{key}:</strong> {String(formatearValor(key, value))}
+                      <strong>{key}:</strong> {renderizarValor(formatearValor(key, value))}
                     </div>
                   ))}
                 </li>
@@ -49,13 +84,12 @@ export const renderizarJson = (jsonString) => {
     }
 
     const objetoFiltrado = filtrarClaves(parsed)
-
     return Object.entries(objetoFiltrado).length
       ? (
         <ul className='list-disc list-inside'>
           {Object.entries(objetoFiltrado).map(([key, value]) => (
             <li key={key}>
-              <strong>{key}:</strong> {String(formatearValor(key, value))}
+              <strong>{key}:</strong> {renderizarValor(formatearValor(key, value))}
             </li>
           ))}
         </ul>

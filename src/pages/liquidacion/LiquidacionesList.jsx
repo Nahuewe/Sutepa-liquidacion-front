@@ -13,9 +13,9 @@ import ConfirmModal from '@/components/ui/ConfirmModal'
 import Loading from '@/components/ui/Loading'
 import Pagination from '@/components/ui/Pagination'
 import SearchInput from '@/components/ui/SearchInput'
+import { descargarLiquidacionesExcel } from '@/export/exportarArchivos'
 import {
   deleteLiquidacion,
-  exportarLiquidaciones,
   getLiquidaciones,
   searchLiquidaciones,
   marcarPagada
@@ -37,22 +37,6 @@ export const LiquidacionesList = () => {
     return debouncedSearch
       ? searchLiquidaciones(debouncedSearch, currentPage)
       : getLiquidaciones(currentPage)
-  }
-
-  const descargarLiquidacionesExcel = async () => {
-    try {
-      const blob = await exportarLiquidaciones()
-      const url = window.URL.createObjectURL(new Blob([blob]))
-      const link = document.createElement('a')
-      link.href = url
-      link.setAttribute('download', 'liquidaciones.xlsx')
-      document.body.appendChild(link)
-      link.click()
-      link.parentNode.removeChild(link)
-      window.URL.revokeObjectURL(url)
-    } catch (error) {
-      console.error('Error descargando Excel:', error)
-    }
   }
 
   const { data, isLoading, refetch } = useQuery({

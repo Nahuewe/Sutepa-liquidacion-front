@@ -8,19 +8,23 @@
         "field": "nombre"
     },
     {
-        "label": "DNI",
-        "field": "dni"
+        "label": "CUIL",
+        "field": "CUIL"
     },
     {
         "label": "Legajo",
         "field": "legajo"
     },
     {
-        "label": "Seccional",
-        "field": "seccional"
+        "label": "Puesto",
+        "field": "puesto"
     },
     {
-        "label": "Fecha y Hora",
-        "field": "registrado_en"
+        "label": "Sueldo Basico",
+        "field": "sueldo basico"
+    },
+    {
+        "label": "Acciones",
+        "field": "acciones"
     }
 ]

@@ -8,7 +8,7 @@ import Card from '@/components/ui/Card'
 import Loading from '@/components/ui/Loading'
 import { SelectForm } from '@/components/ui/SelectForm'
 import Textinput from '@/components/ui/Textinput'
-import { getConceptos } from '@/services/conceptosService'
+import { getConceptos, calcularConcepto } from '@/services/conceptoService'
 import { getEmpleados } from '@/services/empleadoService'
 import { createLiquidacion, getLiquidacionById, updateLiquidacion } from '@/services/liquidacionService'
 
@@ -41,7 +41,7 @@ export const CreateEditLiquidacion = () => {
     defaultValues: {
       empleado_id: '',
       periodo: '',
-      items: [{ concepto_id: '', tipo: 'HABER', codigo: '', descripcion: '', monto: 0 }]
+      items: []
     }
   })
 
@@ -89,6 +89,37 @@ export const CreateEditLiquidacion = () => {
       neto: hab - desc
     }
   }, [itemsWatch])
+
+  useEffect(() => {
+    const empleadoId = watch('empleado_id')
+    if (!empleadoId || !empleadosData?.data) return
+
+    const empleado = empleadosData.data.find(e => String(e.id) === String(empleadoId))
+    if (!empleado) return
+
+    const sueldo = Number(empleado.sueldo_basico || 0)
+
+    const exists = itemsWatch.some(i => i.codigo === 'BAS')
+
+    if (!exists) {
+      replace([
+        {
+          concepto_id: null,
+          tipo: 'HABER',
+          codigo: 'BAS',
+          descripcion: 'Sueldo Básico',
+          monto: sueldo
+        },
+        ...(itemsWatch || [])
+      ])
+    } else {
+      itemsWatch.forEach((it, idx) => {
+        if (it.codigo === 'BAS') {
+          setValue(`items.${idx}.monto`, sueldo)
+        }
+      })
+    }
+  }, [watch('empleado_id'), empleadosData])
 
   const createMut = useMutation({
     mutationFn: (payload) => createLiquidacion(payload),
@@ -154,7 +185,7 @@ export const CreateEditLiquidacion = () => {
             </div>
 
             <div>
-              <label className='form-label block font-medium'>Periodo (YYYY-MM) *</label>
+              <label className='form-label block font-medium'>Periodo (AÑO-MES) *</label>
               <Textinput
                 name='periodo'
                 placeholder='YYYY-MM'
@@ -175,7 +206,7 @@ export const CreateEditLiquidacion = () => {
               <Button
                 text='Agregar concepto'
                 onClick={() => append({ concepto_id: '', tipo: 'HABER', codigo: '', descripcion: '', monto: 0 })}
-                className='bg-blue-600 text-white'
+                className='bg-blue-600 text-white p-2'
               />
             </div>
           </div>
@@ -206,7 +237,7 @@ export const CreateEditLiquidacion = () => {
                         value={watch(`items.${idx}.concepto_id`) ?? ''}
                         options={(conceptosData?.data || []).map(c => ({
                           id: c.id,
-                          nombre: `${c.codigo} - ${c.descripcion} (${c.tipo})`
+                          nombre: `${c.codigo} - ${c.descripcion}` // (${c.tipo})
                         }))}
                         onChange={(e) => {
                           const selected = (conceptosData?.data || []).find(
@@ -218,7 +249,25 @@ export const CreateEditLiquidacion = () => {
                             setValue(`items.${idx}.codigo`, selected.codigo)
                             setValue(`items.${idx}.descripcion`, selected.descripcion)
                             setValue(`items.${idx}.tipo`, selected.tipo)
-                            setValue(`items.${idx}.monto`, Number(selected.monto_default || 0))
+
+                            if (selected.modo_calculo === 'FIJO') {
+                              setValue(`items.${idx}.monto`, Number(selected.monto_default || 0))
+                            }
+
+                            if (selected.modo_calculo !== 'FIJO') {
+                              const empleadoId = watch('empleado_id')
+
+                              if (!empleadoId) {
+                                toast.error('Primero seleccioná un empleado')
+                                return
+                              }
+
+                              calcularConcepto(selected.id, empleadoId, itemsWatch)
+                                .then(valor => {
+                                  setValue(`items.${idx}.monto`, Number(valor))
+                                })
+                                .catch(() => toast.error('No se pudo calcular el concepto'))
+                            }
                           } else {
                             setValue(`items.${idx}.concepto_id`, '')
                           }
@@ -260,26 +309,26 @@ export const CreateEditLiquidacion = () => {
                     <td className='p-1 w-32'>
                       <Textinput
                         name={`items.${idx}.monto`}
-                        type='number'
                         register={register}
-                        value={watch(`items.${idx}.monto`) ?? 0}
+                        rules={{ valueAsNumber: true }}
                         onChange={(e) => {
-                          const value = Number(e.target.value)
-                          setValue(`items.${idx}.monto`, value, { shouldValidate: true })
+                          const v = Number(e.target.value || 0)
+                          setValue(`items.${idx}.monto`, v, { shouldValidate: true })
                         }}
-                        placeholder='0.00'
+                        type='number'
                       />
                     </td>
 
-                    {/* ELIMINAR */}
                     <td className='p-2'>
-                      <button
-                        type='button'
-                        className='text-red-600'
-                        onClick={() => remove(idx)}
-                      >
-                        Eliminar
-                      </button>
+                      {watch(`items.${idx}.codigo`) !== 'BAS' && (
+                        <button
+                          type='button'
+                          className='text-red-600'
+                          onClick={() => remove(idx)}
+                        >
+                          Eliminar
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}

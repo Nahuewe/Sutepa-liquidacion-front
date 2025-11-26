@@ -9,6 +9,7 @@ import Card from '@/components/ui/Card'
 import Loading from '@/components/ui/Loading'
 import Pagination from '@/components/ui/Pagination'
 import SearchInput from '@/components/ui/SearchInput'
+import columnEmpleados from '@/json/columnEmpleados'
 import { deleteEmpleado, getEmpleados, searchEmpleado } from '@/services/empleadoService'
 
 export const Empleados = () => {
@@ -98,13 +99,9 @@ export const Empleados = () => {
               <table className='min-w-full divide-y divide-slate-200'>
                 <thead className='bg-slate-200 dark:bg-slate-700'>
                   <tr>
-                    <th className='table-th'>Apellido</th>
-                    <th className='table-th'>Nombre</th>
-                    <th className='table-th'>CUIL</th>
-                    <th className='table-th'>Legajo</th>
-                    <th className='table-th'>Puesto</th>
-                    <th className='table-th'>Sueldo Basico</th>
-                    <th className='table-th'>Acciones</th>
+                    {columnEmpleados.map((col, i) => (
+                      <th key={i} className='table-th'>{col.label}</th>
+                    ))}
                   </tr>
                 </thead>
 

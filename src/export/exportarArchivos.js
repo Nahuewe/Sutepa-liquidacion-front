@@ -1,46 +1,20 @@
-import { getIngresoExcel, getEgresoExcel } from '@/services/registroService'
-import { getVotacionExcel, getVotoExcel } from '@/services/votacionService'
+import { sutepaApi } from '@/api'
+import { exportarLiquidaciones } from '@/services/liquidacionService'
 
-export const descargarVotacionesExcel = async () => {
-  try {
-    const blob = await getVotacionExcel()
-    const url = window.URL.createObjectURL(new Blob([blob]))
-
-    const link = document.createElement('a')
-    link.href = url
-    link.setAttribute('download', 'votaciones.xlsx')
-    document.body.appendChild(link)
-    link.click()
-    link.remove()
-  } catch (error) {
-    console.error('Error al exportar votaciones:', error)
-    alert('No se pudo exportar las votaciones')
-  }
+const getAuditoriaExcel = async () => {
+  const response = await sutepaApi.get('/auditoria/exportar', {
+    responseType: 'blob'
+  })
+  return response.data
 }
 
-export const descargarVotosExcel = async () => {
+export const descargarAuditoriaExcel = async () => {
   try {
-    const blob = await getVotoExcel()
+    const blob = await getAuditoriaExcel()
     const url = window.URL.createObjectURL(new Blob([blob]))
     const link = document.createElement('a')
     link.href = url
-    link.setAttribute('download', 'votos.xlsx')
-    document.body.appendChild(link)
-    link.click()
-    link.remove()
-  } catch (error) {
-    console.error('Error al exportar votos:', error)
-    alert('No se pudo exportar los votos')
-  }
-}
-
-export const descargarIngresoExcel = async () => {
-  try {
-    const blob = await getIngresoExcel()
-    const url = window.URL.createObjectURL(new Blob([blob]))
-    const link = document.createElement('a')
-    link.href = url
-    link.setAttribute('download', 'ingresos.xlsx')
+    link.setAttribute('download', 'auditoria.xlsx')
     document.body.appendChild(link)
     link.click()
     link.parentNode.removeChild(link)
@@ -50,13 +24,13 @@ export const descargarIngresoExcel = async () => {
   }
 }
 
-export const descargarEgresoExcel = async () => {
+export const descargarLiquidacionesExcel = async () => {
   try {
-    const blob = await getEgresoExcel()
+    const blob = await exportarLiquidaciones()
     const url = window.URL.createObjectURL(new Blob([blob]))
     const link = document.createElement('a')
     link.href = url
-    link.setAttribute('download', 'egresos.xlsx')
+    link.setAttribute('download', 'liquidaciones.xlsx')
     document.body.appendChild(link)
     link.click()
     link.parentNode.removeChild(link)

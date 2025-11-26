@@ -9,7 +9,7 @@ import Loading from '@/components/ui/Loading'
 import Pagination from '@/components/ui/Pagination'
 import SearchInput from '@/components/ui/SearchInput'
 import columnConceptos from '@/json/columnConceptos'
-import { deleteConcepto, getConceptos, searchConcepto } from '@/services/conceptosService'
+import { deleteConcepto, getConceptos, searchConcepto } from '@/services/conceptoService'
 
 export const Conceptos = () => {
   const navigate = useNavigate()

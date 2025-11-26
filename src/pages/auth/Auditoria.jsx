@@ -9,6 +9,7 @@ import Card from '@/components/ui/Card'
 import Loading from '@/components/ui/Loading'
 import Pagination from '@/components/ui/Pagination'
 import { formatearFechaArgentina } from '@/constant/datos-id'
+import { descargarAuditoriaExcel } from '@/export/exportarArchivos'
 import columnAuditoria from '@/json/columnAuditoria'
 
 export const Auditoria = () => {
@@ -32,29 +33,6 @@ export const Auditoria = () => {
 
   const auditorias = auditoria?.data || []
   const pagination = auditoria?.meta || {}
-
-  const getAuditoriaExcel = async () => {
-    const response = await sutepaApi.get('/auditoria/exportar', {
-      responseType: 'blob'
-    })
-    return response.data
-  }
-
-  const descargarAuditoriaExcel = async () => {
-    try {
-      const blob = await getAuditoriaExcel()
-      const url = window.URL.createObjectURL(new Blob([blob]))
-      const link = document.createElement('a')
-      link.href = url
-      link.setAttribute('download', 'auditoria.xlsx')
-      document.body.appendChild(link)
-      link.click()
-      link.parentNode.removeChild(link)
-      window.URL.revokeObjectURL(url)
-    } catch (error) {
-      console.error('Error descargando Excel:', error)
-    }
-  }
 
   const onPageChange = (page) => {
     setCurrentPage(page)

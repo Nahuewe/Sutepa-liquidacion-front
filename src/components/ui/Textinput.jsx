@@ -27,7 +27,7 @@ const Textinput = ({
   options,
   onFocus,
   defaultValue,
-
+  rules = {},
   ...rest
 }) => {
   const [open, setOpen] = useState(false)
@@ -56,7 +56,7 @@ const Textinput = ({
         {name && !isMask && (
           <input
             type={type === 'password' && open === true ? 'text' : type}
-            {...register(name)}
+            {...register(name, rules)}
             {...rest}
             className={`${error ? 'border-red-500 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'} ${error ? 'has-error' : ''} form-control py-2 ${className} dark:text-white dark:placeholder-white placeholder-black-900 placeholder`}
             placeholder={placeholder}
@@ -85,7 +85,7 @@ const Textinput = ({
 
         {name && isMask && (
           <Cleave
-            {...register(name)}
+            {...register(name, rules)}
             {...rest}
             placeholder={placeholder}
             options={options}

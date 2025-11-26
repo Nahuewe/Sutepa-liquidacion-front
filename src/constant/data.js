@@ -18,35 +18,15 @@ export const menuAdmin = [
     icon: 'heroicons-outline:user-group',
     link: 'empleados'
   },
-  // {
-  //   title: 'Votaciones',
-  //   icon: 'heroicons-outline:pencil-square',
-  //   link: 'votaciones'
-  // },
-  // {
-  //   title: 'Orden Del Día',
-  //   icon: 'heroicons-outline:clipboard-document-list',
-  //   link: 'ordenes-diarias'
-  // },
-  // {
-  //   title: 'Ingreso',
-  //   icon: 'heroicons-outline:qr-code',
-  //   link: 'ingreso'
-  // },
-  // {
-  //   title: 'Egreso',
-  //   icon: 'heroicons-outline:qr-code',
-  //   link: 'egreso'
-  // },
-  // {
-  //   title: 'Asistentes',
-  //   icon: 'heroicons-outline:user-group',
-  //   link: 'asistentes'
-  // },
   {
     title: 'Auditoria',
     icon: 'heroicons-outline:document-text',
     link: 'auditoria'
+  },
+  {
+    title: 'Usuarios',
+    icon: 'heroicons-outline:users',
+    link: 'usuarios'
   }
 ]
 

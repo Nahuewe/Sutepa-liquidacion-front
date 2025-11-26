@@ -6,7 +6,6 @@ import { toast } from 'react-toastify'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import Loading from '@/components/ui/Loading'
-import Numberinput from '@/components/ui/Numberinput'
 import Select from '@/components/ui/Select'
 import Textinput from '@/components/ui/Textinput'
 import { useGetParameters } from '@/helpers'
@@ -38,11 +37,11 @@ export const CreateUser = () => {
       if (id) {
         await updateUsuario(id, items)
         toast.info('Usuario editado exitosamente')
-        navigate(`/asistentes?page=${currentPage}`)
+        navigate(`/usuarios?page=${currentPage}`)
       } else {
         await createUsuario(items)
         toast.success('Usuario creado exitosamente')
-        navigate('/asistentes')
+        navigate('/usuarios')
       }
     } catch (error) {
       let errorMessage = 'Error desconocido'
@@ -73,22 +72,20 @@ export const CreateUser = () => {
   const handleDniChange = (e) => {
     const value = e.target.value
     const cleanedValue = value.replace(/[^\d]/g, '')
-    const dniFormat = /^(\d{1,2})(\d{3})(\d{3})$/
-    let formattedDni = ''
-    const maxLength = 8
 
-    if (cleanedValue.length > maxLength) {
-      return
+    const limited = cleanedValue.slice(0, 8)
+    let formatted = limited
+
+    if (limited.length > 3) {
+      if (limited.length <= 7) {
+        formatted = limited.replace(/^(\d)(\d{3})(\d{3})$/, '$1.$2.$3')
+      } else {
+        formatted = limited.replace(/^(\d{2})(\d{3})(\d{3})$/, '$1.$2.$3')
+      }
     }
 
-    if (cleanedValue.length > 1 && cleanedValue.length <= 9) {
-      formattedDni = cleanedValue.replace(dniFormat, '$1.$2.$3')
-    } else {
-      formattedDni = cleanedValue
-    }
-
-    setDni(formattedDni)
-    setValue('dni', formattedDni)
+    setDni(formatted)
+    setValue('dni', formatted)
   }
 
   const loadUser = async () => {
@@ -168,7 +165,7 @@ export const CreateUser = () => {
                   <label htmlFor='dni' className='form-label space-y-2'>
                     DNI
                     <strong className='obligatorio'>(*)</strong>
-                    <Numberinput
+                    <Textinput
                       name='dni'
                       type='text'
                       placeholder='DNI'
@@ -185,7 +182,7 @@ export const CreateUser = () => {
                   <label htmlFor='legajo' className='form-label space-y-2'>
                     Legajo
                     <strong className='obligatorio'>(*)</strong>
-                    <Numberinput
+                    <Textinput
                       name='legajo'
                       type='text'
                       placeholder='Legajo'
@@ -233,7 +230,7 @@ export const CreateUser = () => {
               <div className='ltr:text-right rtl:text-left'>
                 <button
                   className='btn-danger items-center text-center py-2 px-6 rounded-lg'
-                  onClick={() => navigate(`/asistentes?page=${currentPage}`)}
+                  onClick={() => navigate(`/usuarios?page=${currentPage}`)}
                 >
                   Volver
                 </button>

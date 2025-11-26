@@ -29,3 +29,17 @@ export const deleteConcepto = async (id) => {
   const { data } = await sutepaApi.delete(`/conceptos/${id}`)
   return data
 }
+
+export const calcularConcepto = async (conceptoId, empleadoId, items) => {
+  const { data } = await sutepaApi.post(`/conceptos/${conceptoId}/calcular`, {
+    concepto_id: conceptoId,
+    empleado_id: empleadoId,
+    items: items.map(i => ({
+      concepto_id: i.concepto_id || null,
+      codigo: i.codigo,
+      monto: Number(i.monto) || 0
+    }))
+  })
+
+  return data.monto
+}

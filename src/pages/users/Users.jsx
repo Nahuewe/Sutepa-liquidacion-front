@@ -42,11 +42,11 @@ export const Users = () => {
   }
 
   function addUser () {
-    navigate(`/asistentes/crear?page=${currentPage}`)
+    navigate(`/usuarios/crear?page=${currentPage}`)
   }
 
   async function onEdit (id) {
-    navigate(`/asistentes/editar/${id}?page=${currentPage}`)
+    navigate(`/usuarios/editar/${id}?page=${currentPage}`)
   }
 
   async function onDelete (id) {
@@ -83,7 +83,7 @@ export const Users = () => {
             <>
               <Card>
                 <div className='mb-4 md:flex md:justify-between'>
-                  <h1 className='text-2xl font-semibold dark:text-white mb-4 md:mb-0'> Listado de Asistentes ({usuarios?.meta?.total || 0}) </h1>
+                  <h1 className='text-2xl font-semibold dark:text-white mb-4 md:mb-0'> Listado de Usuarios ({usuarios?.meta?.total || 0}) </h1>
                   <div className='flex flex-col md:flex-row items-start md:items-center gap-4'>
                     <div className='relative'>
                       <SearchInput
@@ -112,7 +112,7 @@ export const Users = () => {
                           <button
                             type='button'
                             onClick={addUser}
-                            className='bg-indigo-600 hover:bg-blue-800 text-white items-center text-center py-2 px-6 rounded-lg'
+                            className='bg-red-600 hover:bg-red-800 text-white items-center text-center py-2 px-6 rounded-lg'
                           >
                             Agregar
                           </button>
