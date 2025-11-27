@@ -8,7 +8,7 @@ import Loading from '@/components/ui/Loading'
 import Textinput from '@/components/ui/Textinput'
 import { createConcepto, getConceptoById, updateConcepto } from '@/services/conceptoService'
 
-export const CreateEditConceptos = () => {
+export const CreateConceptos = () => {
   const { id } = useParams()
   const navigate = useNavigate()
   const location = useLocation()

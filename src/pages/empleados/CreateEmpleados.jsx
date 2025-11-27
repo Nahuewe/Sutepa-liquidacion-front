@@ -8,7 +8,7 @@ import Loading from '@/components/ui/Loading'
 import Textinput from '@/components/ui/Textinput'
 import { createEmpleado, getEmpleadoById, updateEmpleado } from '@/services/empleadoService'
 
-export const CreateEditEmpleados = () => {
+export const CreateEmpleados = () => {
   const { id } = useParams()
   const navigate = useNavigate()
   const location = useLocation()

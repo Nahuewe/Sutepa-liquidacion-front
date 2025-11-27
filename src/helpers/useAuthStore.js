@@ -1,38 +1,40 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { toast } from 'react-toastify'
 import { sutepaApi } from '@/api'
-import { handleLogin, handleLogout, onChecking, setErrorMessage } from '@/store/auth'
+import { handleLogin, handleLogout, setErrorMessage } from '@/store/auth'
 
 export const useAuthStore = () => {
   const { status, user } = useSelector(state => state.auth)
   const dispatch = useDispatch()
 
-  const startLogin = async ({ legajo }) => {
-    dispatch(onChecking())
-
+  const startLogin = async ({ username, password }) => {
     try {
-      const { data: { token, user } } = await sutepaApi.post('/login', { legajo })
+      const { data: { token, user } } = await sutepaApi.post('/login', {
+        username,
+        password
+      })
 
       if (user) {
         localStorage.setItem('token', token)
         dispatch(handleLogin({ ...user }))
+        return { ok: true }
       } else {
-        startLogout()
+        dispatch(handleLogout())
+        return { ok: false, message: 'Usuario inválido' }
       }
     } catch (error) {
-      let errorMessage = 'Error desconocido'
-      if (error.response && error.response.data && error.response.data.errors) {
-        const errors = error.response.data.errors
-        const firstErrorKey = Object.keys(errors)[0]
-        errorMessage = errors[firstErrorKey][0]
-      } else {
-        errorMessage = error.message
+      let message = 'Error al iniciar sesión'
+      let remaining
+
+      if (error.response?.data?.error) {
+        message = error.response.data.error
+      }
+      if (error.response?.data?.remaining !== undefined) {
+        remaining = error.response.data.remaining
       }
 
-      console.error('Error en el inicio de sesión:', errorMessage)
-      dispatch(setErrorMessage(errorMessage))
-      toast.error(`No se pudo iniciar sesión: ${errorMessage}`)
-      startLogout()
+      dispatch(setErrorMessage(message))
+      dispatch(handleLogout())
+      return { ok: false, message, remaining }
     }
   }
 
@@ -58,7 +60,6 @@ export const useAuthStore = () => {
   return {
     status,
     user,
-
     startLogin,
     checkAuthToken,
     startLogout

@@ -23,7 +23,6 @@ export const LiquidacionView = () => {
 
   return (
     <>
-      {/* ENCABEZADO */}
       <div className='flex items-center justify-between p-6 rounded-2xl bg-white dark:bg-slate-800 shadow mb-6'>
         <div>
           <h1 className='text-3xl font-bold text-gray-800 dark:text-white'>
@@ -40,7 +39,6 @@ export const LiquidacionView = () => {
         />
       </div>
 
-      {/* TABLA */}
       <Card className='p-0 overflow-hidden'>
         <div className='overflow-x-auto'>
           <table className='w-full text-left border-separate border-spacing-0'>
@@ -97,7 +95,6 @@ export const LiquidacionView = () => {
         </div>
       </Card>
 
-      {/* TOTALES */}
       <div className='mt-6'>
         <Card className='p-6 md:w-1/3 ml-auto shadow-lg'>
           <div className='space-y-2 text-gray-800 dark:text-gray-200 text-lg'>
@@ -123,5 +120,3 @@ export const LiquidacionView = () => {
     </>
   )
 }
-
-export default LiquidacionView

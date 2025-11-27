@@ -2,16 +2,16 @@ import { useEffect } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { Auditoria } from './pages/auth/Auditoria'
 import { Conceptos } from './pages/conceptos/Conceptos'
-import { CreateEditConceptos } from './pages/conceptos/CreateEditConceptos'
-import { CreateEditEmpleados } from './pages/empleados/CreateEditEmpleados'
+import { CreateConceptos } from './pages/conceptos/CreateConceptos'
+import { CreateEmpleados } from './pages/empleados/CreateEmpleados'
 import { Empleados } from './pages/empleados/Empleados'
 import Loading from '@/components/ui/Loading'
 import { useAuthStore } from '@/helpers/useAuthStore'
 import Layout from '@/layout/Layout'
 import Error from '@/pages/404'
 import Login from '@/pages/auth/Login'
-import { CreateEditLiquidacion } from '@/pages/liquidacion/CreateEditLiquidacion'
-import { LiquidacionesList } from '@/pages/liquidacion/LiquidacionesList'
+import { CreateLiquidacion } from '@/pages/liquidacion/CreateLiquidacion'
+import { Liquidaciones } from '@/pages/liquidacion/Liquidaciones'
 import { LiquidacionView } from '@/pages/liquidacion/LiquidacionView'
 import { CreateUser } from '@/pages/users/CreateUser'
 import { Users } from '@/pages/users/Users'
@@ -52,20 +52,20 @@ function App () {
                   <Route path='auditoria' element={<Auditoria />} />
 
                   {/* Liquidacion */}
-                  <Route path='liquidaciones' element={<LiquidacionesList />} />
-                  <Route path='liquidaciones/crear' element={<CreateEditLiquidacion />} />
-                  <Route path='liquidaciones/editar/:id' element={<CreateEditLiquidacion />} />
+                  <Route path='liquidaciones' element={<Liquidaciones />} />
+                  <Route path='liquidaciones/crear' element={<CreateLiquidacion />} />
+                  <Route path='liquidaciones/editar/:id' element={<CreateLiquidacion />} />
                   <Route path='liquidaciones/:id' element={<LiquidacionView />} />
 
                   {/* Conceptos */}
                   <Route path='conceptos' element={<Conceptos />} />
-                  <Route path='conceptos/crear' element={<CreateEditConceptos />} />
-                  <Route path='conceptos/editar/:id' element={<CreateEditConceptos />} />
+                  <Route path='conceptos/crear' element={<CreateConceptos />} />
+                  <Route path='conceptos/editar/:id' element={<CreateConceptos />} />
 
                   {/* Empleados */}
                   <Route path='empleados' element={<Empleados />} />
-                  <Route path='empleados/crear' element={<CreateEditEmpleados />} />
-                  <Route path='empleados/editar/:id' element={<CreateEditEmpleados />} />
+                  <Route path='empleados/crear' element={<CreateEmpleados />} />
+                  <Route path='empleados/editar/:id' element={<CreateEmpleados />} />
 
                   {/* Usuarios */}
                   <Route path='usuarios' element={<Users />} />

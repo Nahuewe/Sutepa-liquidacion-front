@@ -12,7 +12,7 @@ import { getConceptos, calcularConcepto } from '@/services/conceptoService'
 import { getEmpleados } from '@/services/empleadoService'
 import { createLiquidacion, getLiquidacionById, updateLiquidacion } from '@/services/liquidacionService'
 
-export const CreateEditLiquidacion = () => {
+export const CreateLiquidacion = () => {
   const { id } = useParams()
   const navigate = useNavigate()
   const qc = useQueryClient()
@@ -366,5 +366,3 @@ export const CreateEditLiquidacion = () => {
     </>
   )
 }
-
-export default CreateEditLiquidacion

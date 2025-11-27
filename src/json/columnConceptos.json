@@ -16,6 +16,14 @@
     "field": "monto"
   },
   {
+    "label": "Calculo del Monto",
+    "field": "monto_calculo"
+  },
+  {
+    "label": "Valor del Calculo",
+    "field": "valor_calculo"
+  },
+  {
     "label": "Acciones",
     "field": "acciones"
   }

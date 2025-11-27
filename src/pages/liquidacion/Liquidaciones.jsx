@@ -21,7 +21,7 @@ import {
   marcarPagada
 } from '@/services/liquidacionService'
 
-export const LiquidacionesList = () => {
+export const Liquidaciones = () => {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const location = useLocation()
@@ -212,5 +212,3 @@ export const LiquidacionesList = () => {
     </>
   )
 }
-
-export default LiquidacionesList

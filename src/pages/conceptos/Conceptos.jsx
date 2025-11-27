@@ -113,10 +113,16 @@ export const Conceptos = () => {
                     {conceptos?.data?.length > 0
                       ? conceptos?.data?.map((item) => (
                         <tr key={item.id}>
-                          <td className='table-td'>{item.codigo}</td>
-                          <td className='table-td'>{item.descripcion}</td>
-                          <td className='table-td'>{item.tipo}</td>
-                          <td className='table-td'>{item.monto_default}</td>
+                          <td className='table-td'>{item.codigo || '-'}</td>
+                          <td className='table-td'>{item.descripcion || '-'}</td>
+                          <td className='table-td'>{item.tipo || '-'}</td>
+                          <td className='table-td'>{item.monto_default || '-'}</td>
+                          <td className='table-td'>{item.modo_calculo || '-'}</td>
+                          <td className='table-td'>
+                            {item.valor_calculo !== undefined && item.valor_calculo !== null
+                              ? `${item.valor_calculo}%`
+                              : '-'}
+                          </td>
                           <td className='table-td flex gap-2'>
                             <EditButton evento={item} onEdit={onEdit} />
                             <DeleteButton evento={item} onDelete={onDelete} refetch={refetch} />
