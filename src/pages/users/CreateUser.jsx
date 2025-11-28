@@ -23,6 +23,7 @@ export const CreateUser = () => {
   const [seccionales, setSeccionales] = useState([])
   const [dni, setDni] = useState('')
   const [legajo, setLegajo] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const { user } = useSelector((state) => state.auth)
   const navigate = useNavigate()
   const {
@@ -88,6 +89,10 @@ export const CreateUser = () => {
     setValue('dni', formatted)
   }
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword)
+  }
+
   const loadUser = async () => {
     setIsLoading(true)
     const rolesData = await startSelectRoles()
@@ -99,8 +104,12 @@ export const CreateUser = () => {
         const response = await getUsuarioById(id)
         const usuario = response.data
         setValue('nombre', usuario.nombre)
-        setValue('apellido', usuario.apellido)
+        setValue('legajo', usuario.legajo)
+        setLegajo(usuario.legajo)
+
         setValue('dni', usuario.dni)
+        setDni(usuario.dni)
+
         setValue('legajo', usuario.legajo)
         setValue('roles_id', usuario.roles_id)
         setValue('seccional_id', usuario.seccional_id)
@@ -158,6 +167,59 @@ export const CreateUser = () => {
                       error={errors.apellido}
                       disabled={!isEditable}
                     />
+                  </label>
+                </div>
+
+                <div>
+                  <label htmlFor='username' className='form-label space-y-2'>
+                    Usuario
+                    <strong className='obligatorio'>(*)</strong>
+                    <Textinput
+                      name='username'
+                      type='text'
+                      placeholder='Nombre de usuario'
+                      register={register}
+                      error={errors.username}
+                      disabled={!isEditable}
+                    />
+                  </label>
+                </div>
+
+                <div className='relative'>
+                  <label htmlFor='password' className='form-label space-y-2'>
+                    Contraseña
+                    <strong className='obligatorio'>(*)</strong>
+                    <Textinput
+                      name='password'
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder='Contraseña'
+                      register={register}
+                      error={errors.password}
+                    />
+                    <button
+                      type='button'
+                      className='absolute top-[46%] right-4 mb-1'
+                      onClick={togglePasswordVisibility}
+                    >
+                      {showPassword
+                        ? (
+                          <svg xmlns='http://www.w3.org/2000/svg' className='icon icon-tabler icon-tabler-eye dark:stroke-white' width='24' height='24' viewBox='0 0 24 24' strokeWidth='1' stroke='#000000' fill='none' strokeLinecap='round' strokeLinejoin='round'>
+                            <path stroke='none' d='M0 0h24v24H0z' fill='none' />
+                            <path d='M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0' />
+                            <path d='M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6' />
+                          </svg>
+                          )
+                        : (
+                          <svg xmlns='http://www.w3.org/2000/svg' className='icon icon-tabler icon-tabler-eye-closed dark:stroke-white' width='24' height='24' viewBox='0 0 24 24' strokeWidth='1' stroke='#000000' fill='none' strokeLinecap='round' strokeLinejoin='round'>
+                            <path stroke='none' d='M0 0h24v24H0z' fill='none' />
+                            <path d='M21 9c-2.4 2.667 -5.4 4 -9 4c-3.6 0 -6.6 -1.333 -9 -4' />
+                            <path d='M3 15l2.5 -3.8' />
+                            <path d='M21 14.976l-2.492 -3.776' />
+                            <path d='M9 17l.5 -4' />
+                            <path d='M15 17l-.5 -4' />
+                          </svg>
+                          )}
+                    </button>
                   </label>
                 </div>
 
